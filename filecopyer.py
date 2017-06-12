@@ -1,9 +1,20 @@
 import os
 import time
 import shutil
+import logging
+
+log = logging.getLogger('filecpyer')
+log.setLevel(logging.DEBUG)
+fh = logging.FileHandler('spam.log')
+fh.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+fh.setFormatter(formatter)
+log.addHandler(fh)
+log.info('START')
 
 class CopyFiler:
     def __init__(self, dir1, dir2, dst):
+        log.info('Init')
         self.dir1 = {}
         self.dir2 = {}
         self.queue = None
@@ -19,11 +30,15 @@ class CopyFiler:
     def run(self):
         self.check_folders()
 
+    """
+    Check directories on new files
+    """
     def check_folders(self):
         file_for_copies_in_dir1 = ""
         file_for_copies_in_dir2 = ""
         temp = self._file_pathes(self.dir1['path'])
-        l = temp - self.dir1['list']
+
+        l =  temp - self.dir1['list']
         if len(l) != 0:
             file_for_copies_in_dir1 = list(l)[0]
 
@@ -42,14 +57,18 @@ class CopyFiler:
             else:
                 return
 
-            self.dir1["list"].add(file_for_copies_in_dir1)
-            self.dir2["list"].add(file_for_copies_in_dir2)
-            self.upd_lenght()
+            self._upd_lists()
+            self._upd_lenght()
+
             print(self.dir1)
             print(self.dir2)
 
 
-    def upd_lenght(self):
+    def _upd_lists(self):
+        self.dir1["list"] = self._file_pathes(self.dir1['path'])
+        self.dir2["list"] = self._file_pathes(self.dir2['path'])
+
+    def _upd_lenght(self):
         self.dir1['length_list'] = len(self.dir1['list'])
         self.dir2['length_list'] = len(self.dir2['list'])
 
